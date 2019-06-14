@@ -27,7 +27,7 @@ For Grafana installation [paralect.grafana](https://galaxy.ansible.com/paralect/
 
 1. Update hosts file
   - ```monitoring``` is ip of the server where you are planing to deploy grafana
-  - ```server``` is ip of server where you application is located, used with telegraf
+  - ```server``` is ip of server where yoy are planning to deploy telegraf. If you don't need System (CPU, Disk, etc.), Database, Docker metrics, but you only need HTTP response metrics then specify the same ip as for monitoring
 2. Install Ansible role dependencies with one command: `./bin/install-ansible-dependencies.sh`
 3. Rename `credentials-template.yml` into `credentials.yml` and update the following variables:
   - `gf_admin_user` - username for admin user. You need it to login to the grafana.
@@ -41,7 +41,6 @@ For Grafana installation [paralect.grafana](https://galaxy.ansible.com/paralect/
   - `influx_read_user` - influxDB username of the user with read permissions. Grafana uses this user.
   - `influx_read_user_password` - influxDB password of the user with read permissions.
 4. Update variables in the `main.yml` file
-  - `app_name` - application name. Used in nginx
   - `hostname` - field `host` in telegraf data
   - `gf_domain` - domain name for grafana
   - `postgres_db_name` - PostgreSQL database name
@@ -55,10 +54,22 @@ For Grafana installation [paralect.grafana](https://galaxy.ansible.com/paralect/
     * tcp://localhost:6379
     * tcp://:password@192.168.99.100
     * unix:///var/run/redis.sock
+5. To change the address of the server which should be used for HTTP response metrics change the `config/telegraf/telegraf.conf.j2` file (line 936):
+<pre>
+[[inputs.http_response]]
+  ## Server address (default http://localhost)
+  <b>address = "http://github.com"</b>
+  ## Set response_timeout (default 5 seconds)
+  response_timeout = "5s"
+  ## HTTP Request Method
+  method = "GET"
+  ## Whether to follow redirects from the server (defaults to false)
+  follow_redirects = true
+</pre>
 
 Once you done all above, run the following command:
 ```
-./bin/setup-server.sh && ./bin/deploy-influxdb.sh && ./bin/deploy-grafana.sh ./bin/deploy-nginx.sh
+./bin/setup-server.sh && ./bin/deploy-influxdb.sh && ./bin/deploy-grafana.sh && ./bin/deploy-nginx.sh
 ```
 
 ### Setting up Telegraf to collect data

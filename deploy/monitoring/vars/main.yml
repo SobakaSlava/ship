@@ -1,9 +1,9 @@
-hostname: ship
+hostname: eazykfz
 
-gf_domain: ship-monitor.paralect.com
+gf_domain: eazykfz-monitor.paralect.com
 
 # postgres database name
-postgres_db_name: ship_grafana
+postgres_db_name: eazykfz_grafana
 
 # Data source name, used by grafana
 data_source_name: DS_INFLUXDB
@@ -13,7 +13,7 @@ influx_db_name: "monitoring"
 # InfluxDB connection string, used by telegraf to send data
 # e.g.
 #   http://10.10.3.33:8086
-influxdb_connection: http://178.62.116.103:8086
+influxdb_connection: http://165.22.87.120:8086
 
 # Mongo connection string, used by telegraf to monitor count of operations
 # e.g.
