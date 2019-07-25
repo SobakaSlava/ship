@@ -1,0 +1,11 @@
+rbac:
+  create: true
+
+provider: cloudflare
+
+cloudflare:
+  proxied: false
+
+interval: "1m"
+
+policy: sync # or upsert-only
