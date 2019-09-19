@@ -62,10 +62,37 @@ steps:
       event:
         - push
 
+  - name: publish-landing-docker
+    depends_on:
+      - publish-api-docker
+      - publish-web-docker
+    image: plugins/docker
+    volumes:
+      - name: docker-socket
+        path: /var/run/docker.sock
+    purge: false
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      repo: paralect/ship-landing
+      tags:
+        - latest
+        - ${DRONE_BRANCH}.${DRONE_COMMIT}
+      dockerfile: ./landing/Dockerfile
+      context: ./landing
+    when:
+      branch:
+        - production
+      event:
+        - push
+
   - name: helm-deploy
     depends_on:
       - publish-api-docker
       - publish-web-docker
+      - publish-landing-docker
     image: quay.io/ipedrazas/drone-helm
     environment:
       PROD_API_SERVER:
@@ -112,9 +139,11 @@ steps:
         - imageCredentials.username=$IMAGE_CREDENTIALS_USERNAME
         - imageCredentials.password=$IMAGE_CREDENTIALS_PASSWORD
         - imageCredentials.secretName=$IMAGE_CREDENTIALS_SECRET_NAME
-      when:
-        branch: production
-        event: push
+    when:
+      branch:
+        - production
+      event:
+        - push
 volumes:
   - name: docker-socket
     host:
